@@ -1,16 +1,25 @@
 # FrendGame
 
-Если видишь 404 на GitHub Pages:
+Если видишь ошибку вида:
 
-1. Проверь URL:
-   - user/organization site: `https://<user>.github.io/`
-   - project site: `https://<user>.github.io/<repo>/`
-2. В **Settings → Pages** выбери **Source: GitHub Actions**.
-3. Убедись, что последний push дошёл в GitHub (не только локальный commit).
-4. Дождись успешного workflow **Deploy static site to GitHub Pages**.
+> Branch "..." is not allowed to deploy to github-pages due to environment protection rules
 
-## Что настроено в репозитории
+это значит, что GitHub Pages environment разрешает деплой только из защищённой ветки (обычно `main`).
 
-- Есть `index.html` как главная страница.
-- Есть `404.html` fallback.
-- Workflow деплоя запускается на push в **любую** ветку и выкладывает текущий коммит.
+## Что уже исправлено в workflow
+
+- Workflow теперь делает проверку файлов на **любой ветке**.
+- Деплой в `github-pages` запускается **только** для `main` или `master`.
+- Поэтому в feature-ветках не будет падения из-за environment protection.
+
+## Что сделать у себя в репозитории
+
+1. Смержить изменения в `main`.
+2. Открыть **Settings → Environments → github-pages** и убедиться, что allowed branches включает `main` (или нужную ветку деплоя).
+3. В **Settings → Pages** выбрать **Source: GitHub Actions**.
+4. После merge дождаться успешного workflow deploy на `main`.
+
+## URL
+
+- user/organization site: `https://<user>.github.io/`
+- project site: `https://<user>.github.io/<repo>/`
