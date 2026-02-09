@@ -1,36 +1,16 @@
 # FrendGame
 
-Если видишь ошибку вида:
+Чтобы убрать конфликты и ошибки вида `outdated deployment`, структура упрощена до **одной** версии сайта в корне репозитория.
 
-> Branch "..." is not allowed to deploy to github-pages due to environment protection rules
+## Текущая схема
 
-это значит, что GitHub Pages environment разрешает деплой только из защищённой ветки (обычно `main`).
+- `index.html` — главный вход
+- `404.html` — fallback
+- `app.js`, `tasks.js`, `styles.css` — логика и стили
+- GitHub Actions deploy только из `main/master`
 
-## Что уже исправлено в workflow
+## Важно
 
-- Workflow теперь делает проверку файлов на **любой ветке**.
-- Деплой в `github-pages` запускается **только** для `main` или `master`.
-- Поэтому в feature-ветках не будет падения из-за environment protection.
-
-## Что сделать у себя в репозитории
-
-1. Смержить изменения в `main`.
-2. Открыть **Settings → Environments → github-pages** и убедиться, что allowed branches включает `main` (или нужную ветку деплоя).
-3. В **Settings → Pages** выбрать **Source: GitHub Actions**.
-4. После merge дождаться успешного workflow deploy на `main`.
-
-## URL
-
-- user/organization site: `https://<user>.github.io/`
-- project site: `https://<user>.github.io/<repo>/`
-
-
-## Если открывается старая версия
-
-- Открой сайт с принудительным обновлением: `Ctrl+F5` (или очисти cache в браузере).
-- В проекте включён cache-busting: `styles.css?v=20260209`, `app.js?v=20260209`, `tasks.js?v=20260209`.
-
-## Почему в PR мог быть "outdated deployment"
-
-Это происходило, когда workflow пытался деплоить из feature-ветки.
-Теперь в PR запускается только `validate`, а реальный deploy идет только на push в `main/master`.
+- В PR запускается только `validate` (без deploy), поэтому feature-ветка не падает на protection rules.
+- После merge в `main` запускается реальный deploy.
+- Если видишь старую версию — сделай hard refresh (`Ctrl+F5`).
