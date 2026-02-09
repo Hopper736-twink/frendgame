@@ -7,11 +7,11 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="layout">
+  <main class="layout mobile-only">
     <section id="modeGate" class="panel gate">
       <p class="eyebrow">ПЕРЕД ИГРОЙ</p>
       <h1>Выбери режим</h1>
-      <p class="subtitle">Добавляй друзей и запускай игру. Позже сюда можно добавить новые мини‑игры.</p>
+      <p class="subtitle">Мобильная версия FrendGame: удобно играть в компании с одного телефона.</p>
       <div class="mode-grid">
         <button class="mode-btn" data-gamemode="classic">
           <strong>🎲 Классика</strong>
@@ -19,11 +19,7 @@
         </button>
         <button class="mode-btn" data-gamemode="ai">
           <strong>🤖 ИИ режим</strong>
-          <span>Без ограничений, задания генерируются динамически.</span>
-        </button>
-        <button class="mode-btn" data-gamemode="remote">
-          <strong>🌍 Дистанционный</strong>
-          <span>Играй с разных устройств: экспорт/импорт кода состояния.</span>
+          <span>Нестандартные задания без ограничений.</span>
         </button>
       </div>
     </section>
@@ -93,16 +89,6 @@
           </div>
           <h3>Рейтинг</h3>
           <div id="scoreBoard" class="score"></div>
-        </article>
-
-        <article id="remotePanel" class="panel wide hidden">
-          <h2>Дистанционная игра (beta)</h2>
-          <p class="hint">Чтобы играть с разных устройств: нажми «Экспорт», отправь код другу, на другом устройстве вставь код и нажми «Импорт».</p>
-          <div class="row">
-            <button id="exportStateBtn" class="secondary">Экспорт кода</button>
-            <button id="importStateBtn" class="secondary">Импорт кода</button>
-          </div>
-          <textarea id="syncPayload" placeholder="Код состояния для обмена между устройствами"></textarea>
         </article>
 
         <article class="panel wide">

@@ -38,11 +38,7 @@ const ui = {
   helpBtn: $('helpBtn'),
   clearLogBtn: $('clearLogBtn'),
   scoreBoard: $('scoreBoard'),
-  gameLog: $('gameLog'),
-  remotePanel: $('remotePanel'),
-  exportStateBtn: $('exportStateBtn'),
-  importStateBtn: $('importStateBtn'),
-  syncPayload: $('syncPayload')
+  gameLog: $('gameLog')
 };
 
 function currentPlayer() { return state.players[state.currentIndex]; }
@@ -56,7 +52,7 @@ function logEvent(message) {
 }
 
 function syncBadges() {
-  const modeName = state.mode === 'ai' ? 'ИИ' : state.mode === 'remote' ? 'Дистанционный' : 'Классика';
+  const modeName = state.mode === 'ai' ? 'ИИ' : 'Классика';
   ui.modeBadge.textContent = `🎲 Режим: ${modeName}`;
   ui.difficultyBadge.textContent = `⚡ Сложность: ${diffLabel(state.currentDifficulty)}`;
   ui.streakBadge.textContent = `🔥 Серия: ${state.globalStreak}`;
@@ -85,9 +81,7 @@ function renderTask() {
     ui.taskType.textContent = 'Тип: —';
     ui.taskDiff.textContent = 'Сложность: —';
     ui.taskText.textContent = 'Нажми «Рандом», чтобы получить задание';
-    ui.taskHint.textContent = state.mode === 'remote'
-      ? 'Для игры на расстоянии делись кодом состояния после каждого хода.'
-      : 'Подсказка: карты могут заменить задание на своё.';
+    ui.taskHint.textContent = 'Подсказка: карты могут заменить задание на своё.';
     return;
   }
 
@@ -222,38 +216,10 @@ function addPlayer() {
   logEvent(`👤 В игру вошёл игрок ${name}.`);
 }
 
-function exportState() {
-  const payload = {
-    players: state.players,
-    currentIndex: state.currentIndex,
-    currentTask: state.currentTask,
-    currentDifficulty: state.currentDifficulty,
-    ultraEnabled: state.ultraEnabled,
-    mode: state.mode,
-    globalStreak: state.globalStreak,
-    log: state.log
-  };
-  ui.syncPayload.value = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-}
-
-function importState() {
-  try {
-    const raw = decodeURIComponent(escape(atob(ui.syncPayload.value.trim())));
-    const incoming = JSON.parse(raw);
-    Object.assign(state, incoming);
-    ui.ultraEnabled.checked = !!state.ultraEnabled;
-    ui.difficultySelect.value = state.currentDifficulty;
-    renderTurn(); renderPlayers(); renderTask(); renderCards(); renderScore(); syncBadges();
-  } catch {
-    alert('Не удалось импортировать код состояния.');
-  }
-}
-
 function openGame(mode) {
   state.mode = mode;
   ui.modeGate.classList.add('hidden');
   ui.gameApp.classList.remove('hidden');
-  ui.remotePanel.classList.toggle('hidden', mode !== 'remote');
   syncBadges();
 }
 
@@ -264,8 +230,6 @@ ui.randomBtn.addEventListener('click', generateTask);
 ui.doneBtn.addEventListener('click', () => applyTurnResult(true));
 ui.failBtn.addEventListener('click', () => applyTurnResult(false));
 ui.nextTurnBtn.addEventListener('click', nextTurn);
-ui.exportStateBtn.addEventListener('click', exportState);
-ui.importStateBtn.addEventListener('click', importState);
 
 ui.ultraEnabled.addEventListener('change', () => {
   state.ultraEnabled = ui.ultraEnabled.checked;
@@ -284,7 +248,7 @@ ui.difficultySelect.addEventListener('change', () => {
 });
 
 ui.helpBtn.addEventListener('click', () => {
-  alert('Правила:\n1) Игроки по очереди берут рандом.\n2) Выполнил — очки и серия.\n3) В дистанционном режиме делитесь кодом через Экспорт/Импорт.');
+  alert('Правила:\n1) Игроки по очереди берут рандом.\n2) Выполнил — очки и серия.');
 });
 
 ui.clearLogBtn.addEventListener('click', () => { state.log = []; ui.gameLog.innerHTML = ''; });
