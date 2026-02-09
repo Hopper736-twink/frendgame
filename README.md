@@ -1,12 +1,16 @@
 # FrendGame
 
-Если в PR пишет "This branch has conflicts", часто конфликт возникает из-за разницы `Index.html`/`index.html`.
-В репозитории оставлены оба файла с одинаковым содержимым для безопасного merge на разных базовых ветках.
+Если видишь 404 на GitHub Pages:
 
-## GitHub Pages
+1. Проверь URL:
+   - user/organization site: `https://<user>.github.io/`
+   - project site: `https://<user>.github.io/<repo>/`
+2. В **Settings → Pages** выбери **Source: GitHub Actions**.
+3. Убедись, что последний push дошёл в GitHub (не только локальный commit).
+4. Дождись успешного workflow **Deploy static site to GitHub Pages**.
 
-- Основной вход: `index.html`
-- Резервная страница: `404.html`
-- Для `/docs` тоже добавлен `docs/404.html`
+## Что настроено в репозитории
 
-Это уменьшает вероятность 404 и при прямом открытии ссылок, и при нестандартной конфигурации Pages.
+- Есть `index.html` как главная страница.
+- Есть `404.html` fallback.
+- Workflow деплоя запускается на push в **любую** ветку и выкладывает текущий коммит.

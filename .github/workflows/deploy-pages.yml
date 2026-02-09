@@ -2,7 +2,8 @@ name: Deploy static site to GitHub Pages
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches:
+      - '**'
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
@@ -24,6 +25,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate required pages files
+        run: |
+          test -f index.html
+          test -f 404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
