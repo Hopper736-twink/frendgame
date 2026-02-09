@@ -29,3 +29,8 @@
 
 - Открой сайт с принудительным обновлением: `Ctrl+F5` (или очисти cache в браузере).
 - В проекте включён cache-busting: `styles.css?v=20260209`, `app.js?v=20260209`, `tasks.js?v=20260209`.
+
+## Почему в PR мог быть "outdated deployment"
+
+Это происходило, когда workflow пытался деплоить из feature-ветки.
+Теперь в PR запускается только `validate`, а реальный deploy идет только на push в `main/master`.

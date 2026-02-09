@@ -1,9 +1,11 @@
-name: Deploy static site to GitHub Pages
+name: Pages CI and Deploy
 
 on:
+  pull_request:
   push:
     branches:
-      - '**'
+      - main
+      - master
   workflow_dispatch:
 
 permissions:
@@ -12,7 +14,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages-${{ github.ref }}"
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -26,10 +28,12 @@ jobs:
         run: |
           test -f index.html
           test -f 404.html
+          test -f app.js
+          test -f styles.css
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: validate
-    if: github.ref_name == 'main' || github.ref_name == 'master'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
