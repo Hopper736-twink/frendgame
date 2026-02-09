@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrendGame — Правда или Действие</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="layout">
+    <header class="panel hero">
+      <div>
+        <p class="eyebrow">FRIENDS NIGHT</p>
+        <h1>FrendGame</h1>
+        <p class="subtitle">Платформа для мини-игр. Сейчас активен режим: <strong>Правда или Действие</strong>.</p>
+        <div id="turnStatus" class="status">Добавь игроков, чтобы начать игру.</div>
+      </div>
+      <div class="badges">
+        <span id="modeBadge" class="badge">🎲 Режим: Классика</span>
+        <span id="difficultyBadge" class="badge">⚡ Сложность: Лёгкий</span>
+        <span id="streakBadge" class="badge">🔥 Серия: 0</span>
+      </div>
+    </header>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Игроки</h2>
+        <div class="row">
+          <input id="playerName" type="text" placeholder="Введи своё имя" />
+          <button id="addPlayerBtn">Добавить</button>
+        </div>
+        <p class="hint">Ходы идут по очереди. В свой ход игрок получает рандомное задание и решает, выполнять его или пропустить.</p>
+        <ul id="playersList" class="list"></ul>
+      </article>
+
+      <article class="panel">
+        <h2>Задание хода</h2>
+        <div class="task">
+          <div class="row">
+            <span id="taskType" class="pill">Тип: —</span>
+            <span id="taskDiff" class="pill">Сложность: —</span>
+          </div>
+          <h3 id="taskText">Нажми «Рандом», чтобы получить задание</h3>
+          <p id="taskHint" class="hint">Подсказка: карты могут заменить задание на своё.</p>
+        </div>
+
+        <div class="row controls">
+          <button id="randomBtn">🎯 Рандом</button>
+          <button id="doneBtn" class="ok">✅ Выполнено</button>
+          <button id="failBtn" class="danger">❌ Пропуск</button>
+          <button id="nextTurnBtn" class="secondary">⏭ Следующий ход</button>
+        </div>
+
+        <h3>Карты текущего игрока</h3>
+        <div id="playerCards" class="cards"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Настройки</h2>
+
+        <label class="switch">
+          <input type="checkbox" id="ultraEnabled" />
+          Включить уровень «Офигевший»
+        </label>
+
+        <div class="row">
+          <label for="difficultySelect">Базовая сложность:</label>
+          <select id="difficultySelect">
+            <option value="easy">Лёгкий</option>
+            <option value="hard">Сложный</option>
+            <option value="ultra">Офигевший</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label for="modeSelect">Режим:</label>
+          <select id="modeSelect">
+            <option value="classic">Классика</option>
+            <option value="ai">ИИ режим (без ограничений)</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <button id="helpBtn" class="secondary">🆘 Помощь</button>
+          <button id="clearLogBtn" class="secondary">Очистить историю</button>
+        </div>
+
+        <p id="specialStatus" class="hint">Особый статус: выключен</p>
+
+        <h3>Рейтинг</h3>
+        <div id="scoreBoard" class="score"></div>
+      </article>
+
+      <article class="panel wide">
+        <h2>История и редактор задания</h2>
+        <ul id="gameLog" class="list"></ul>
+
+        <h3>Переписать задание другому игроку</h3>
+        <p class="hint">Работает только в особом статусе и пока идёт текущий ход.</p>
+        <div class="row">
+          <select id="targetPlayer"></select>
+          <button id="rewriteBtn" class="secondary">Переписать</button>
+        </div>
+        <textarea id="rewriteText" placeholder="Введите новое задание..."></textarea>
+      </article>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
