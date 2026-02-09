@@ -2,109 +2,110 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Танцующий шоколад</title>
-
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: #1a0f0a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: system-ui, sans-serif;
-      color: #f5e6d3;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    #choco {
-      width: 160px;
-      height: 240px;
-      background: linear-gradient(
-        135deg,
-        #3b1f14,
-        #5a2c1c,
-        #3b1f14
-      );
-      border-radius: 14px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      text-align: center;
-      animation: dance1 2s infinite ease-in-out;
-    }
-
-    #text {
-      position: absolute;
-      bottom: 30px;
-      opacity: 0.7;
-      font-size: 14px;
-      text-align: center;
-      padding: 0 20px;
-    }
-
-    @keyframes dance1 {
-      0% { transform: rotate(-3deg) translateY(0); }
-      50% { transform: rotate(3deg) translateY(-15px); }
-      100% { transform: rotate(-3deg) translateY(0); }
-    }
-
-    @keyframes dance2 {
-      0% { transform: scale(1) rotate(0); }
-      50% { transform: scale(1.1) rotate(8deg); }
-      100% { transform: scale(1) rotate(0); }
-    }
-
-    @keyframes dance3 {
-      0% { transform: translateX(-10px); }
-      25% { transform: translateX(10px); }
-      50% { transform: translateX(-10px); }
-      75% { transform: translateX(10px); }
-      100% { transform: translateX(0); }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrendGame — Правда или Действие</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <main class="layout">
+    <header class="panel hero">
+      <div>
+        <p class="eyebrow">FRIENDS NIGHT</p>
+        <h1>FrendGame</h1>
+        <p class="subtitle">Платформа для мини-игр. Сейчас активен режим: <strong>Правда или Действие</strong>.</p>
+        <div id="turnStatus" class="status">Добавь игроков, чтобы начать игру.</div>
+      </div>
+      <div class="badges">
+        <span id="modeBadge" class="badge">🎲 Режим: Классика</span>
+        <span id="difficultyBadge" class="badge">⚡ Сложность: Лёгкий</span>
+        <span id="streakBadge" class="badge">🔥 Серия: 0</span>
+      </div>
+    </header>
 
-  <div id="choco">🍫</div>
-  <div id="text">Он танцует.</div>
+    <section class="grid">
+      <article class="panel">
+        <h2>Игроки</h2>
+        <div class="row">
+          <input id="playerName" type="text" placeholder="Введи своё имя" />
+          <button id="addPlayerBtn">Добавить</button>
+        </div>
+        <p class="hint">Ходы идут по очереди. В свой ход игрок получает рандомное задание и решает, выполнять его или пропустить.</p>
+        <ul id="playersList" class="list"></ul>
+      </article>
 
-  <script>
-    const choco = document.getElementById("choco");
-    const text = document.getElementById("text");
+      <article class="panel">
+        <h2>Задание хода</h2>
+        <div class="task">
+          <div class="row">
+            <span id="taskType" class="pill">Тип: —</span>
+            <span id="taskDiff" class="pill">Сложность: —</span>
+          </div>
+          <h3 id="taskText">Нажми «Рандом», чтобы получить задание</h3>
+          <p id="taskHint" class="hint">Подсказка: карты могут заменить задание на своё.</p>
+        </div>
 
-    const dances = ["dance1", "dance2", "dance3"];
-    const phrases = [
-      "Я шоколад. Я танцую.",
-      "Не спрашивай.",
-      "Ты всё ещё здесь?",
-      "Мне нравится ритм.",
-      "Это не баг."
-    ];
+        <div class="row controls">
+          <button id="randomBtn">🎯 Рандом</button>
+          <button id="doneBtn" class="ok">✅ Выполнено</button>
+          <button id="failBtn" class="danger">❌ Пропуск</button>
+          <button id="nextTurnBtn" class="secondary">⏭ Следующий ход</button>
+        </div>
 
-    let lastAction = Date.now();
+        <h3>Карты текущего игрока</h3>
+        <div id="playerCards" class="cards"></div>
+      </article>
 
-    function randomDance() {
-      const d = dances[Math.floor(Math.random() * dances.length)];
-      choco.style.animation = d + " 1.8s infinite ease-in-out";
-      text.textContent = phrases[Math.floor(Math.random() * phrases.length)];
-    }
+      <article class="panel">
+        <h2>Настройки</h2>
 
-    choco.addEventListener("click", () => {
-      randomDance();
-      lastAction = Date.now();
-    });
+        <label class="switch">
+          <input type="checkbox" id="ultraEnabled" />
+          Включить уровень «Офигевший»
+        </label>
 
-    setInterval(() => {
-      if (Date.now() - lastAction > 8000) {
-        text.textContent = "Ты просто смотришь. Это странно.";
-      }
-    }, 1000);
-  </script>
+        <div class="row">
+          <label for="difficultySelect">Базовая сложность:</label>
+          <select id="difficultySelect">
+            <option value="easy">Лёгкий</option>
+            <option value="hard">Сложный</option>
+            <option value="ultra">Офигевший</option>
+          </select>
+        </div>
 
+        <div class="row">
+          <label for="modeSelect">Режим:</label>
+          <select id="modeSelect">
+            <option value="classic">Классика</option>
+            <option value="ai">ИИ режим (без ограничений)</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <button id="helpBtn" class="secondary">🆘 Помощь</button>
+          <button id="clearLogBtn" class="secondary">Очистить историю</button>
+        </div>
+
+        <p id="specialStatus" class="hint">Особый статус: выключен</p>
+
+        <h3>Рейтинг</h3>
+        <div id="scoreBoard" class="score"></div>
+      </article>
+
+      <article class="panel wide">
+        <h2>История и редактор задания</h2>
+        <ul id="gameLog" class="list"></ul>
+
+        <h3>Переписать задание другому игроку</h3>
+        <p class="hint">Работает только в особом статусе и пока идёт текущий ход.</p>
+        <div class="row">
+          <select id="targetPlayer"></select>
+          <button id="rewriteBtn" class="secondary">Переписать</button>
+        </div>
+        <textarea id="rewriteText" placeholder="Введите новое задание..."></textarea>
+      </article>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
