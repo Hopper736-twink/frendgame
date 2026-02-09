@@ -23,3 +23,9 @@
 
 - user/organization site: `https://<user>.github.io/`
 - project site: `https://<user>.github.io/<repo>/`
+
+
+## Если открывается старая версия
+
+- Открой сайт с принудительным обновлением: `Ctrl+F5` (или очисти cache в браузере).
+- В проекте включён cache-busting: `styles.css?v=20260209`, `app.js?v=20260209`, `tasks.js?v=20260209`.

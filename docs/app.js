@@ -1,4 +1,4 @@
-import { taskPools, cardsCatalog } from './tasks.js';
+import { taskPools, cardsCatalog } from './tasks.js?v=20260209';
 
 const state = {
   players: [],
