@@ -1,4 +1,4 @@
-import { taskPools, cardsCatalog } from './tasks.js?v=20260209';
+import { taskPools, cardsCatalog, aiGameTemplates } from './tasks.js?v=20260210';
 
 const state = {
   players: [],
@@ -6,7 +6,7 @@ const state = {
   currentTask: null,
   currentDifficulty: 'easy',
   ultraEnabled: false,
-  mode: null,
+  game: null,
   globalStreak: 0,
   log: []
 };
@@ -14,11 +14,12 @@ const state = {
 const $ = (id) => document.getElementById(id);
 
 const ui = {
-  modeGate: $('modeGate'),
+  gameGate: $('gameGate'),
   gameApp: $('gameApp'),
-  modeButtons: Array.from(document.querySelectorAll('[data-gamemode]')),
+  gameButtons: Array.from(document.querySelectorAll('[data-game]')),
+  gameSubtitle: $('gameSubtitle'),
+  gameBadge: $('gameBadge'),
   turnStatus: $('turnStatus'),
-  modeBadge: $('modeBadge'),
   difficultyBadge: $('difficultyBadge'),
   streakBadge: $('streakBadge'),
   playerName: $('playerName'),
@@ -35,15 +36,24 @@ const ui = {
   playerCards: $('playerCards'),
   ultraEnabled: $('ultraEnabled'),
   difficultySelect: $('difficultySelect'),
+  difficultyBlock: $('difficultyBlock'),
   helpBtn: $('helpBtn'),
   clearLogBtn: $('clearLogBtn'),
   scoreBoard: $('scoreBoard'),
   gameLog: $('gameLog')
 };
 
-function currentPlayer() { return state.players[state.currentIndex]; }
-function diffLabel(value) { return value === 'easy' ? 'Лёгкий' : value === 'hard' ? 'Сложный' : 'Офигевший'; }
-function randomFrom(list) { return list[Math.floor(Math.random() * list.length)]; }
+function currentPlayer() {
+  return state.players[state.currentIndex];
+}
+
+function diffLabel(value) {
+  return value === 'easy' ? 'Лёгкий' : value === 'hard' ? 'Сложный' : 'Офигевший';
+}
+
+function randomFrom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
 
 function logEvent(message) {
   state.log.unshift(message);
@@ -52,9 +62,10 @@ function logEvent(message) {
 }
 
 function syncBadges() {
-  const modeName = state.mode === 'ai' ? 'ИИ' : 'Классика';
-  ui.modeBadge.textContent = `🎲 Режим: ${modeName}`;
-  ui.difficultyBadge.textContent = `⚡ Сложность: ${diffLabel(state.currentDifficulty)}`;
+  const gameName = state.game === 'ai' ? 'ИИ Игра' : 'Правда или Действие';
+  ui.gameBadge.textContent = `🎮 Игра: ${gameName}`;
+  ui.gameSubtitle.innerHTML = `Игра: <strong>${gameName}</strong>.`;
+  ui.difficultyBadge.textContent = `⚡ Сложность: ${state.game === 'ai' ? 'Адаптивная' : diffLabel(state.currentDifficulty)}`;
   ui.streakBadge.textContent = `🔥 Серия: ${state.globalStreak}`;
 }
 
@@ -81,20 +92,28 @@ function renderTask() {
     ui.taskType.textContent = 'Тип: —';
     ui.taskDiff.textContent = 'Сложность: —';
     ui.taskText.textContent = 'Нажми «Рандом», чтобы получить задание';
-    ui.taskHint.textContent = 'Подсказка: карты могут заменить задание на своё.';
+    ui.taskHint.textContent = state.game === 'ai'
+      ? 'ИИ игра: в этом режиме нет формата «правда/действие».'
+      : 'Подсказка: карты помогают в сложных моментах.';
     return;
   }
 
-  ui.taskType.textContent = `Тип: ${state.currentTask.type === 'truth' ? 'Правда' : 'Действие'}`;
-  ui.taskDiff.textContent = `Сложность: ${diffLabel(state.currentTask.diff)}`;
+  ui.taskType.textContent = `Тип: ${state.currentTask.typeLabel}`;
+  ui.taskDiff.textContent = `Сложность: ${state.currentTask.diffLabel}`;
   ui.taskText.textContent = state.currentTask.text;
   ui.taskHint.textContent = 'За длинную серию успешных ходов выпадают более редкие карты.';
 }
 
 function renderCards() {
   const player = currentPlayer();
-  if (!player) return ui.playerCards.innerHTML = '<p class="hint">Нет игроков.</p>';
-  if (!player.cards.length) return ui.playerCards.innerHTML = '<p class="hint">Пока нет карт.</p>';
+  if (!player) {
+    ui.playerCards.innerHTML = '<p class="hint">Нет игроков.</p>';
+    return;
+  }
+  if (!player.cards.length) {
+    ui.playerCards.innerHTML = '<p class="hint">Пока нет карт.</p>';
+    return;
+  }
 
   ui.playerCards.innerHTML = player.cards.map((card, index) => `
     <div class="card">
@@ -111,19 +130,30 @@ function pickDifficulty() {
   return selected;
 }
 
-function generateAiTask() {
-  const topics = ['драма', 'юмор', 'романтика', 'безумие', 'лидерство', 'харизма'];
-  const verbs = ['придумай', 'сыграй', 'покажи', 'докажи', 'озвучь'];
-  const limits = ['за 30 секунд', 'без смеха', 'в стиле трейлера', 'шёпотом', 'на максимальном пафосе'];
+function generateAiGameTask() {
+  const goal = randomFrom(aiGameTemplates.goals);
+  const style = randomFrom(aiGameTemplates.styles);
+  const limit = randomFrom(aiGameTemplates.limits);
+  return {
+    typeLabel: 'ИИ миссия',
+    diffLabel: 'Адаптивная',
+    text: `Задание: ${goal} ${style}, ${limit}.`
+  };
+}
+
+function generateTruthOrDareTask() {
+  state.currentDifficulty = pickDifficulty();
   const type = Math.random() > 0.5 ? 'truth' : 'dare';
-  const text = type === 'truth'
-    ? `ИИ-вопрос: ${randomFrom(verbs)} свою историю про ${randomFrom(topics)} ${randomFrom(limits)}.`
-    : `ИИ-вызов: ${randomFrom(verbs)} мини-перформанс на тему «${randomFrom(topics)}» ${randomFrom(limits)}.`;
-  return { type, diff: state.currentDifficulty, text };
+  const text = randomFrom(taskPools[state.currentDifficulty][type]);
+  return {
+    typeLabel: type === 'truth' ? 'Правда' : 'Действие',
+    diffLabel: diffLabel(state.currentDifficulty),
+    text
+  };
 }
 
 function grantCard(player) {
-  const rarity = Math.min(3, Math.floor(player.streak / 2));
+  const rarity = Math.min(2, Math.floor(player.streak / 2));
   const available = cardsCatalog.slice(0, 2 + rarity);
   const card = randomFrom(available);
   player.cards.push({ ...card });
@@ -132,30 +162,37 @@ function grantCard(player) {
 
 function generateTask() {
   const player = currentPlayer();
-  if (!player) return alert('Сначала добавь хотя бы одного игрока.');
-  state.currentDifficulty = pickDifficulty();
-
-  if (state.mode === 'ai') state.currentTask = generateAiTask();
-  else {
-    const type = Math.random() > 0.5 ? 'truth' : 'dare';
-    const text = randomFrom(taskPools[state.currentDifficulty][type]);
-    state.currentTask = { type, diff: state.currentDifficulty, text };
+  if (!player) {
+    alert('Сначала добавь хотя бы одного игрока.');
+    return;
   }
 
+  state.currentTask = state.game === 'ai' ? generateAiGameTask() : generateTruthOrDareTask();
   renderTask();
   syncBadges();
-  logEvent(`${player.name} получил ${state.currentTask.type === 'truth' ? 'правду' : 'действие'}: ${state.currentTask.text}`);
+  logEvent(`${player.name} получил задание: ${state.currentTask.text}`);
+}
+
+function pointsForCurrentGame() {
+  if (state.game === 'ai') return 2;
+  return state.currentDifficulty === 'easy' ? 1 : state.currentDifficulty === 'hard' ? 2 : 4;
 }
 
 function applyTurnResult(isSuccess) {
   const player = currentPlayer();
-  if (!player || !state.currentTask) return alert('Сначала сгенерируй задание.');
+  if (!player || !state.currentTask) {
+    alert('Сначала сгенерируй задание.');
+    return;
+  }
 
   if (isSuccess) {
     player.streak += 1;
     state.globalStreak += 1;
-    let points = state.currentDifficulty === 'easy' ? 1 : state.currentDifficulty === 'hard' ? 2 : 4;
-    if (player.doubleReward) { points *= 2; player.doubleReward = false; }
+    let points = pointsForCurrentGame();
+    if (player.doubleReward) {
+      points *= 2;
+      player.doubleReward = false;
+    }
     player.points += points;
     logEvent(`✅ ${player.name} выполнил задание и получил ${points} очков.`);
     if (player.streak % 2 === 0) grantCard(player);
@@ -191,13 +228,20 @@ function useCard(index) {
   player.cards.splice(index, 1);
   logEvent(`${player.name} использует карту «${card.title}».`);
 
-  if (card.key === 'skip') state.currentTask = { type: 'dare', diff: state.currentDifficulty, text: 'Ход пропущен картой. Передай ход.' };
-  if (card.key === 'reroll') return generateTask();
-  if (card.key === 'custom') {
-    const customText = prompt('Введи своё задание:');
-    if (customText?.trim()) state.currentTask = { type: 'dare', diff: state.currentDifficulty, text: customText.trim() };
+  if (card.key === 'skip') {
+    state.currentTask = {
+      typeLabel: 'Сервис',
+      diffLabel: state.game === 'ai' ? 'Адаптивная' : diffLabel(state.currentDifficulty),
+      text: 'Ход пропущен картой. Передай ход.'
+    };
   }
-  if (card.key === 'double') player.doubleReward = true;
+  if (card.key === 'reroll') {
+    generateTask();
+    return;
+  }
+  if (card.key === 'double') {
+    player.doubleReward = true;
+  }
 
   renderTask();
   renderCards();
@@ -205,7 +249,10 @@ function useCard(index) {
 
 function addPlayer() {
   const name = ui.playerName.value.trim();
-  if (!name) return alert('Введите имя, чтобы продолжить.');
+  if (!name) {
+    alert('Введите имя, чтобы продолжить.');
+    return;
+  }
 
   state.players.push({ name, points: 0, streak: 0, cards: [], doubleReward: false });
   ui.playerName.value = '';
@@ -216,16 +263,26 @@ function addPlayer() {
   logEvent(`👤 В игру вошёл игрок ${name}.`);
 }
 
-function openGame(mode) {
-  state.mode = mode;
-  ui.modeGate.classList.add('hidden');
+function openGame(game) {
+  if (game === 'spy') {
+    alert('Режим «Шпион» скоро добавлю.');
+    return;
+  }
+  state.game = game;
+  ui.gameGate.classList.add('hidden');
   ui.gameApp.classList.remove('hidden');
+  ui.difficultyBlock.classList.toggle('hidden', game === 'ai');
   syncBadges();
+  renderTask();
 }
 
-ui.modeButtons.forEach((btn) => btn.addEventListener('click', () => openGame(btn.dataset.gamemode)));
+ui.gameButtons.forEach((btn) => {
+  btn.addEventListener('click', () => openGame(btn.dataset.game));
+});
 ui.addPlayerBtn.addEventListener('click', addPlayer);
-ui.playerName.addEventListener('keydown', (e) => { if (e.key === 'Enter') addPlayer(); });
+ui.playerName.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') addPlayer();
+});
 ui.randomBtn.addEventListener('click', generateTask);
 ui.doneBtn.addEventListener('click', () => applyTurnResult(true));
 ui.failBtn.addEventListener('click', () => applyTurnResult(false));
@@ -233,7 +290,9 @@ ui.nextTurnBtn.addEventListener('click', nextTurn);
 
 ui.ultraEnabled.addEventListener('change', () => {
   state.ultraEnabled = ui.ultraEnabled.checked;
-  if (!state.ultraEnabled && ui.difficultySelect.value === 'ultra') ui.difficultySelect.value = 'hard';
+  if (!state.ultraEnabled && ui.difficultySelect.value === 'ultra') {
+    ui.difficultySelect.value = 'hard';
+  }
   state.currentDifficulty = pickDifficulty();
   syncBadges();
 });
@@ -248,14 +307,23 @@ ui.difficultySelect.addEventListener('change', () => {
 });
 
 ui.helpBtn.addEventListener('click', () => {
-  alert('Правила:\n1) Игроки по очереди берут рандом.\n2) Выполнил — очки и серия.');
+  alert('Правила:\n1) Выбери игру.\n2) Игроки ходят по очереди.\n3) Выполнил задание — получил очки и серию.');
 });
 
-ui.clearLogBtn.addEventListener('click', () => { state.log = []; ui.gameLog.innerHTML = ''; });
+ui.clearLogBtn.addEventListener('click', () => {
+  state.log = [];
+  ui.gameLog.innerHTML = '';
+});
+
 ui.playerCards.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-card-index]');
   if (!button) return;
   useCard(Number(button.dataset.cardIndex));
 });
 
-renderPlayers(); renderTurn(); renderScore(); renderTask(); renderCards(); syncBadges();
+renderPlayers();
+renderTurn();
+renderScore();
+renderTask();
+renderCards();
+syncBadges();

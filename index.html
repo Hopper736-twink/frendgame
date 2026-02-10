@@ -6,23 +6,27 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>FrendGame — Правда или Действие</title>
-  <link rel="stylesheet" href="styles.css?v=20260209" />
+  <title>FrendGame — мини-игры</title>
+  <link rel="stylesheet" href="styles.css?v=20260210" />
 </head>
 <body>
   <main class="layout mobile-only">
-    <section id="modeGate" class="panel gate">
-      <p class="eyebrow">ПЕРЕД ИГРОЙ</p>
-      <h1>Выбери режим</h1>
-      <p class="subtitle">Мобильная версия FrendGame: удобно играть в компании с одного телефона.</p>
+    <section id="gameGate" class="panel gate">
+      <p class="eyebrow">FRIEND PARTY</p>
+      <h1>Выбери игру</h1>
+      <p class="subtitle">Сейчас доступны «Правда или Действие» и отдельная ИИ-игра. Скоро добавится «Шпион».</p>
       <div class="mode-grid">
-        <button class="mode-btn" data-gamemode="classic">
-          <strong>🎲 Классика</strong>
-          <span>Обычный режим «Правда или Действие».</span>
+        <button class="mode-btn" data-game="tod">
+          <strong>🎯 Правда или Действие</strong>
+          <span>Классическая игра по очереди с очками и картами.</span>
         </button>
-        <button class="mode-btn" data-gamemode="ai">
-          <strong>🤖 ИИ режим</strong>
-          <span>Нестандартные задания без ограничений.</span>
+        <button class="mode-btn" data-game="ai">
+          <strong>🧠 ИИ Игра</strong>
+          <span>Отдельный режим с генерацией без формата «правда/действие».</span>
+        </button>
+        <button class="mode-btn" data-game="spy" disabled>
+          <strong>🕵️ Шпион</strong>
+          <span>Скоро добавлю.</span>
         </button>
       </div>
     </section>
@@ -32,11 +36,11 @@
         <div>
           <p class="eyebrow">FRIENDS NIGHT</p>
           <h1>FrendGame</h1>
-          <p class="subtitle">Первый режим: <strong>Правда или Действие</strong>.</p>
+          <p class="subtitle" id="gameSubtitle">Игра: <strong>Правда или Действие</strong>.</p>
           <div id="turnStatus" class="status">Добавь игроков, чтобы начать игру.</div>
         </div>
         <div class="badges">
-          <span id="modeBadge" class="badge">🎲 Режим: Классика</span>
+          <span id="gameBadge" class="badge">🎮 Игра: Правда или Действие</span>
           <span id="difficultyBadge" class="badge">⚡ Сложность: Лёгкий</span>
           <span id="streakBadge" class="badge">🔥 Серия: 0</span>
         </div>
@@ -49,7 +53,7 @@
             <input id="playerName" type="text" placeholder="Введи имя" />
             <button id="addPlayerBtn">Добавить</button>
           </div>
-          <p class="hint">Ходы идут по очереди. Нажми «Рандом», выполни задание и получай карты.</p>
+          <p class="hint">Игроки ходят по очереди. Выполняй задания и прокачивай серию.</p>
           <ul id="playersList" class="list"></ul>
         </article>
 
@@ -61,7 +65,7 @@
               <span id="taskDiff" class="pill">Сложность: —</span>
             </div>
             <h3 id="taskText">Нажми «Рандом», чтобы получить задание</h3>
-            <p id="taskHint" class="hint">Подсказка: карты могут заменить задание на своё.</p>
+            <p id="taskHint" class="hint">Подсказка: карты помогают в сложных моментах.</p>
           </div>
 
           <div class="row controls">
@@ -77,14 +81,16 @@
 
         <article class="panel">
           <h2>Настройки</h2>
-          <label class="switch"><input type="checkbox" id="ultraEnabled" /> Включить уровень «Офигевший»</label>
-          <div class="row">
-            <label for="difficultySelect">Базовая сложность:</label>
-            <select id="difficultySelect">
-              <option value="easy">Лёгкий</option>
-              <option value="hard">Сложный</option>
-              <option value="ultra">Офигевший</option>
-            </select>
+          <div id="difficultyBlock">
+            <label class="switch"><input type="checkbox" id="ultraEnabled" /> Включить уровень «Офигевший»</label>
+            <div class="row">
+              <label for="difficultySelect">Базовая сложность:</label>
+              <select id="difficultySelect">
+                <option value="easy">Лёгкий</option>
+                <option value="hard">Сложный</option>
+                <option value="ultra">Офигевший</option>
+              </select>
+            </div>
           </div>
           <div class="row">
             <button id="helpBtn" class="secondary">🆘 Помощь</button>
@@ -102,6 +108,6 @@
     </section>
   </main>
 
-  <script type="module" src="app.js?v=20260209"></script>
+  <script type="module" src="app.js?v=20260210"></script>
 </body>
 </html>
