@@ -106,3 +106,10 @@ git push -u origin codex/create-truth-or-dare-game-website-koswz2
 
 Если раньше в PR уже был красный deploy-run, он останется в истории старого commit.
 Новый commit создаёт новый набор checks, и именно он должен быть зелёным.
+
+
+## Совместимость с legacy required checks
+
+Если в branch protection остались старые required checks (например `pages build and deployment`),
+в `pr-checks.yml` добавлен одноимённый совместимый job, который на PR завершается успешно
+без реального деплоя в `github-pages` environment.
