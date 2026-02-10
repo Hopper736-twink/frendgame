@@ -63,3 +63,18 @@ git push -u origin codex/create-truth-or-dare-game-website-koswz2
 - реальный Pages deploy выполняется только на push в `main/master`.
 
 Это убирает блокирующую ошибку protection rules в PR-чексах.
+
+
+## Ручной merge как в GitHub UI
+
+Если хочешь повторить шаги из блока `Checkout via the command line`, используй:
+
+```bash
+./scripts/github_manual_merge.sh codex/create-truth-or-dare-game-website-koswz2 main
+```
+
+Для проверки команд без выполнения:
+
+```bash
+./scripts/github_manual_merge.sh codex/create-truth-or-dare-game-website-koswz2 main --dry-run
+```
