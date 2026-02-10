@@ -14,7 +14,7 @@ body {
   color: var(--text);
   font-family: Inter, system-ui, sans-serif;
 }
-.layout.mobile-only { max-width: 560px; margin: 0 auto; padding: 12px; display: grid; gap: 10px; }
+.layout { max-width: 980px; margin: 0 auto; padding: 12px; display: grid; gap: 10px; }
 .panel { background: linear-gradient(150deg, rgba(13, 26, 52, .96), rgba(9, 16, 33, .96)); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 10px 26px rgba(0, 0, 0, .35); }
 .hidden { display: none !important; }
 .gate h1 { margin: 0 0 8px; }
@@ -48,3 +48,8 @@ button.danger { background: linear-gradient(120deg, #af244f, var(--bad)); }
 
 .mode-btn:disabled { opacity: .6; cursor: not-allowed; }
 .mode-btn:disabled span { color: #7d94b5; }
+
+@media (min-width: 900px) {
+  .grid { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
+  .wide { grid-column: span 3; }
+}
