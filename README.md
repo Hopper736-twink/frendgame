@@ -36,3 +36,21 @@
 ```bash
 git push -u origin codex/create-truth-or-dare-game-website-koswz2
 ```
+
+
+## Если статус в PR "не меняется"
+
+Иногда GitHub показывает `outdated deployment` и визуально кажется, что ошибка не обновляется.
+Сделай merge base -> head и добавь пустой refresh-коммит:
+
+```bash
+./scripts/resolve_pr_conflicts.sh codex/create-truth-or-dare-game-website-koswz2 main --refresh
+```
+
+Потом push в head-ветку:
+
+```bash
+git push -u origin codex/create-truth-or-dare-game-website-koswz2
+```
+
+Это принудительно перезапускает checks и обновляет статус PR.
