@@ -96,3 +96,13 @@ git push -u origin codex/create-truth-or-dare-game-website-koswz2
 - `index.html`
 - `styles.css`
 - `tasks.js`
+
+
+## Почему ошибка могла «не исчезать»
+
+Теперь workflow разделены:
+- `PR Checks (no deploy)` запускается в pull request и **никогда** не деплоит.
+- `Deploy Pages (main only)` запускается только после push в `main/master`.
+
+Если раньше в PR уже был красный deploy-run, он останется в истории старого commit.
+Новый commit создаёт новый набор checks, и именно он должен быть зелёным.

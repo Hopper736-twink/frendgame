@@ -1,10 +1,10 @@
-name: Pages CI and Deploy
+name: Deploy Pages (main only)
 
 on:
-  pull_request:
   push:
     branches:
-      - '**'
+      - main
+      - master
   workflow_dispatch:
 
 permissions:
@@ -13,46 +13,35 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages-deploy
   cancel-in-progress: true
 
 jobs:
-  validate:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate required pages files
+      - name: Validate required files
         run: |
           test -f index.html
           test -f 404.html
           test -f app.js
           test -f styles.css
 
-  deploy:
-    needs: validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Skip deploy for PRs and non-main branches
-        if: github.event_name == 'pull_request' || (github.ref_name != 'main' && github.ref_name != 'master')
-        run: |
-          echo "No pages deployment for this ref: ${GITHUB_REF}"
-          echo "This step succeeds intentionally to avoid blocked github-pages environment checks."
-
       - name: Setup Pages
-        if: github.event_name != 'pull_request' && (github.ref_name == 'main' || github.ref_name == 'master')
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        if: github.event_name != 'pull_request' && (github.ref_name == 'main' || github.ref_name == 'master')
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
       - name: Deploy to GitHub Pages
-        if: github.event_name != 'pull_request' && (github.ref_name == 'main' || github.ref_name == 'master')
+        id: deployment
         uses: actions/deploy-pages@v4

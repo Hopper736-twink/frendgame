@@ -1,0 +1,22 @@
+name: PR Checks (no deploy)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate site files
+        run: |
+          test -f index.html
+          test -f 404.html
+          test -f app.js
+          test -f tasks.js
+          test -f styles.css
