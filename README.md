@@ -54,3 +54,12 @@ git push -u origin codex/create-truth-or-dare-game-website-koswz2
 ```
 
 Это принудительно перезапускает checks и обновляет статус PR.
+
+
+## Ошибка `Branch ... is not allowed to deploy to github-pages`
+
+Исправлено в workflow:
+- job `deploy` теперь **всегда успешный** для PR/feature-веток (noop-step),
+- реальный Pages deploy выполняется только на push в `main/master`.
+
+Это убирает блокирующую ошибку protection rules в PR-чексах.
