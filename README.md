@@ -78,3 +78,21 @@ git push -u origin codex/create-truth-or-dare-game-website-koswz2
 ```bash
 ./scripts/github_manual_merge.sh codex/create-truth-or-dare-game-website-koswz2 main --dry-run
 ```
+
+
+### Если GitHub всё ещё пишет `This branch has conflicts that must be resolved`
+
+Запусти именно авто-резолв для текущего списка конфликтных файлов:
+
+```bash
+./scripts/resolve_pr_conflicts.sh codex/create-truth-or-dare-game-website-koswz2 main --refresh
+```
+
+Скрипт уже включает файлы из сообщения GitHub:
+- `.github/workflows/deploy-pages.yml`
+- `Index.html`
+- `README.md`
+- `app.js`
+- `index.html`
+- `styles.css`
+- `tasks.js`

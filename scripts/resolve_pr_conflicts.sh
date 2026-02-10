@@ -15,11 +15,9 @@ CONFLICT_FILES=(
   "Index.html"
   "README.md"
   "app.js"
-  "docs/app.js"
-  "docs/index.html"
-  "docs/styles.css"
   "index.html"
   "styles.css"
+  "tasks.js"
 )
 
 if ! git remote get-url origin >/dev/null 2>&1; then
